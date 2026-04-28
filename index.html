@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datasets, filtres, cellules et profils</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300..900;1,300..900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        :root {
+            --text: #0a0a0a;
+            --text-soft: #3a3a3a;
+            --text-muted: #6a6a6a;
+            --accent: #b85c38;
+            --accent-soft: #d18a6a;
+            --bg: #fdfcfa;
+            --bg-soft: #f5f3ef;
+            --border: #e0dcd4;
+            --border-soft: #edeae3;
+            --link: #8b3a1a;
+            --code-bg: #f5f3ef;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+            font-size: 17px;
+            line-height: 1.68;
+            color: var(--text);
+            background: var(--bg);
+            font-weight: 400;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .page {
+            max-width: 988px;
+            margin: 0 auto;
+            padding: 4rem 2.5rem 6rem;
+        }
+
+        .cover {
+            padding-top: 5rem;
+            padding-bottom: 4rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 3.5rem;
+        }
+
+        .cover .eyebrow {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .cover h1 {
+            font-family: 'Source Serif 4', serif;
+            font-size: 2.55rem;
+            font-weight: 600;
+            line-height: 1.15;
+            letter-spacing: -0.01em;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .cover .meta {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.9;
+        }
+
+        .cover .meta .date {
+            font-size: 0.82rem;
+        }
+
+        h1.section {
+            font-family: 'Source Serif 4', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            margin-top: 4rem;
+            margin-bottom: 1.25rem;
+            line-height: 1.2;
+            color: var(--text);
+        }
+
+        h1.section::before {
+            content: attr(data-num);
+            display: inline-block;
+            color: var(--accent);
+            font-weight: 500;
+            margin-right: 0.6em;
+        }
+
+        h2 {
+            font-family: 'Source Serif 4', serif;
+            font-size: 1.35rem;
+            font-weight: 600;
+            margin-top: 2.5rem;
+            margin-bottom: 0.75rem;
+            line-height: 1.3;
+            color: var(--text);
+        }
+
+        h2::before {
+            content: attr(data-num);
+            display: inline-block;
+            color: var(--accent);
+            font-weight: 500;
+            margin-right: 0.5em;
+        }
+
+        h3 {
+            font-family: 'Source Serif 4', serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-style: italic;
+            margin-top: 1.75rem;
+            margin-bottom: 0.6rem;
+            color: var(--text-soft);
+        }
+
+        p {
+            margin-bottom: 1.1rem;
+            text-align: justify;
+            hyphens: auto;
+        }
+
+        p+h2,
+        p+h3 {
+            margin-top: 2rem;
+        }
+
+        strong {
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        em {
+            font-style: italic;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            border-bottom: 1px solid var(--accent-soft);
+        }
+
+        ul,
+        ol {
+            margin: 0 0 1.1rem 1.5rem;
+            line-height: 1.68;
+        }
+
+        li {
+            margin-bottom: 0.3rem;
+            padding-left: 0.3rem;
+        }
+
+        ul li::marker {
+            color: var(--accent);
+        }
+
+        ol li::marker {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .table-wrapper {
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            line-height: 1.5;
+        }
+
+        th,
+        td {
+            padding: 0.5rem 0.6rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        thead th {
+            border-bottom: 2px solid var(--text);
+            border-top: 2px solid var(--text);
+            font-weight: 700;
+            color: var(--text);
+            background: var(--bg-soft);
+        }
+
+        tbody tr.highlight td {
+            background: rgba(184, 92, 56, 0.06);
+            font-weight: 600;
+        }
+
+        td.num,
+        th.num {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .table-caption {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            color: var(--text-soft);
+            margin-top: 0.75rem;
+            text-align: left;
+            line-height: 1.55;
+        }
+
+        .table-caption .tab-label {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 0.82em;
+            background: var(--code-bg);
+            padding: 0.1em 0.35em;
+            border-radius: 3px;
+            color: var(--text);
+        }
+
+        .toc {
+            margin: 2rem 0 4rem;
+            padding: 1.75rem 2rem;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: 2px;
+        }
+
+        .toc h2 {
+            margin-top: 0;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-muted);
+            font-weight: 700;
+            border: none;
+            font-style: normal;
+        }
+
+        .toc h2::before {
+            content: none;
+        }
+
+        .toc ol {
+            margin: 1.2rem 0 0 0;
+            list-style: none;
+            counter-reset: toc;
+        }
+
+        .toc li {
+            counter-increment: toc;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.05rem;
+            line-height: 1.85;
+            display: flex;
+            gap: 0.95rem;
+            color: var(--text-soft);
+            padding: 0;
+        }
+
+        .toc li::before {
+            content: counter(toc, decimal) ".";
+            color: var(--accent);
+            font-weight: 600;
+            min-width: 1.5rem;
+        }
+
+        .toc li a {
+            color: inherit;
+            border: none;
+        }
+
+        .footer {
+            margin-top: 5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+            letter-spacing: 0.05em;
+        }
+
+        .acronyms {
+            margin: 1rem 0 1.5rem;
+            padding: 1.1rem 1.4rem;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: 2px;
+        }
+
+        .acronyms h2 {
+            margin-top: 0;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-muted);
+            font-weight: 700;
+            border: none;
+            font-style: normal;
+        }
+
+        .acronyms h2::before {
+            content: none;
+        }
+
+        .acronyms dl {
+            margin: 0.6rem 0 0 0;
+            display: grid;
+            grid-template-columns: minmax(72px, auto) 1fr minmax(72px, auto) 1fr;
+            gap: 0.18rem 0.7rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem;
+            line-height: 1.32;
+        }
+
+        .acronyms dt {
+            font-weight: 700;
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.66rem;
+        }
+
+        .acronyms dd {
+            margin: 0;
+            color: var(--text-soft);
+        }
+
+        .references {
+            margin-top: 4rem;
+            padding-top: 1.75rem;
+            border-top: 2px solid var(--text);
+        }
+
+        .references h2 {
+            margin-top: 0;
+            font-size: 1.25rem;
+            color: var(--text);
+            border: none;
+            font-style: normal;
+        }
+
+        .references h2::before {
+            content: none;
+        }
+
+        .references ol {
+            counter-reset: ref;
+            list-style: none;
+            margin-left: 0;
+            padding-left: 0;
+        }
+
+        .references li {
+            counter-increment: ref;
+            padding-left: 2.5rem;
+            position: relative;
+            margin-bottom: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            line-height: 1.55;
+            color: var(--text-soft);
+        }
+
+        .references li::before {
+            content: "[" counter(ref) "]";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        @media print {
+            body {
+                background: white;
+                font-size: 11pt;
+            }
+
+            .page {
+                max-width: 100%;
+                padding: 0 1.5cm;
+            }
+
+            h1.section,
+            h2,
+            h3 {
+                break-after: avoid;
+                page-break-after: avoid;
+            }
+
+            table {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            a {
+                color: var(--text);
+            }
+
+            .cover {
+                padding-top: 2cm;
+                page-break-after: always;
+            }
+
+            .cover h1 {
+                font-size: 28pt;
+            }
+
+            section.acronyms {
+                page-break-before: always;
+            }
+
+            nav.toc {
+                page-break-before: always;
+                page-break-inside: avoid;
+            }
+
+            h1.section {
+                page-break-before: always;
+            }
+
+            section.references {
+                page-break-before: always;
+            }
+
+            @page {
+                margin: 2cm 1.8cm 2.2cm 1.8cm;
+
+                @bottom-center {
+                    content: counter(page) " / " counter(pages);
+                    font-family: 'Inter', sans-serif;
+                    font-size: 9pt;
+                    color: #6a6a6a;
+                }
+            }
+
+            @page :first {
+                @bottom-center {
+                    content: none;
+                }
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+
+        <header class="cover">
+            <h1>Datasets, filtres, cellules et profils</h1>
+            <div class="meta">
+                <strong>Oussama Akir</strong><br>
+                <div class="date">28 avril 2026</div>
+            </div>
+        </header>
+
+        <section class="acronyms" id="acronyms">
+            <h2>Liste des acronymes</h2>
+            <dl>
+                <dt>AUKF-SR</dt>
+                <dd>Adaptive UKF — Square Root</dd>
+                <dt>BMA</dt>
+                <dd>Bayesian Model Averaging</dd>
+                <dt>CALCE</dt>
+                <dd>Center for Adv. Life Cycle Eng. (UMD)</dd>
+                <dt>CC-CV</dt>
+                <dd>Constant-Current — Constant-Voltage</dd>
+                <dt>DE</dt>
+                <dd>Differential Evolution (scipy)</dd>
+                <dt>DST</dt>
+                <dd>Dynamic Stress Test</dd>
+                <dt>DUKF</dt>
+                <dd>Dual UKF</dd>
+                <dt>ECM</dt>
+                <dd>Equivalent Circuit Model</dd>
+                <dt>EKF</dt>
+                <dd>Extended Kalman Filter</dd>
+                <dt>FO-EKF</dt>
+                <dd>Fractional-Order EKF</dd>
+                <dt>FUDS</dt>
+                <dd>Federal Urban Driving Schedule</dd>
+                <dt>H&infin;</dt>
+                <dd>H-infinity (filtre robuste)</dd>
+                <dt>HHDDT</dt>
+                <dd>Heavy Heavy-Duty Diesel Truck</dd>
+                <dt>HWFET</dt>
+                <dd>Highway Fuel Economy Test</dd>
+                <dt>ICRPF</dt>
+                <dd>Improved Cubature RTS Particle Filter</dd>
+                <dt>LCO</dt>
+                <dd>Lithium Cobalt Oxide</dd>
+                <dt>LFP</dt>
+                <dd>Lithium Iron Phosphate</dd>
+                <dt>NCA</dt>
+                <dd>Nickel Cobalt Aluminum</dd>
+                <dt>NMC</dt>
+                <dd>Nickel Manganese Cobalt</dd>
+                <dt>OCV</dt>
+                <dd>Open-Circuit Voltage</dd>
+                <dt>RMSE</dt>
+                <dd>Root Mean Square Error</dd>
+                <dt>SOC</dt>
+                <dd>State Of Charge</dd>
+                <dt>SO-SMO</dt>
+                <dd>Second-Order Sliding Mode Observer</dd>
+                <dt>UDDS</dt>
+                <dd>Urban Dynamometer Driving Schedule</dd>
+                <dt>UKF</dt>
+                <dd>Unscented Kalman Filter</dd>
+                <dt>US06</dt>
+                <dd>Aggressive driving cycle (EPA)</dd>
+                <dt>WLTC</dt>
+                <dd>Worldwide Light-vehicles Test Cycle</dd>
+            </dl>
+        </section>
+
+        <nav class="toc">
+            <h2>Table des matières</h2>
+            <ol>
+                <li><a href="#filtres">Filtres testés (10)</a></li>
+                <li><a href="#datasets">Datasets utilisés (8 sources)</a></li>
+                <li><a href="#cellules">Cellules &amp; chimies (6 familles)</a></li>
+                <li><a href="#profils">Profils de conduite (28)</a></li>
+            </ol>
+        </nav>
+
+        <section id="filtres">
+            <h1 class="section" data-num="1">Filtres testés (10)</h1>
+
+            <p>Dix filtres en tout&nbsp;: huit baselines SOTA issues de la littérature 2000&ndash;2026, l'estimateur
+                Joint UKF à 5 états (l'ancien), et l'ensemble Bayésien proposé. Chacun ré-optimisé sur les 36
+                configurations de TUNE.</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Filtre</th>
+                            <th>Principe</th>
+                            <th>Hyper-params tunables</th>
+                            <th>Source</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><strong>EKF</strong></td>
+                            <td>Linéarisation Jacobienne autour de l'état courant&nbsp;; Kalman gain classique</td>
+                            <td>&sigma;&sup2;<sub>state</sub>, R<sub>meas</sub></td>
+                            <td>Plett 2004 [<a href="#r1">1</a>]</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><strong>UKF default</strong></td>
+                            <td>Sigma points (2n+1) propagés via la non-linéarité&nbsp;; pondération unscented</td>
+                            <td>&alpha;, &beta;, &kappa;, &sigma;&sup2;<sub>state</sub>, R<sub>meas</sub></td>
+                            <td>Julier &amp; Uhlmann 1997 [<a href="#r3">3</a>]</td>
+                        </tr>
+                        <tr class="highlight">
+                            <td>3</td>
+                            <td><strong>Joint UKF à 5 états</strong> (l'ancien)</td>
+                            <td>UKF 5-état (SOC, V<sub>RC1</sub>, V<sub>RC2</sub>, &rho;<sub>0</sub>,
+                                &rho;<sub>1</sub>)&nbsp;; SOC + paramètres ECM joint</td>
+                            <td>fixé (référence)</td>
+                            <td>Plett 2006 [<a href="#r2">2</a>]</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td><strong>DUKF</strong></td>
+                            <td>Deux UKF parallèles&nbsp;: un pour l'état (SOC), un pour les paramètres</td>
+                            <td>&alpha;, &beta;, R<sub>meas</sub>, &sigma;&sup2;<sub>&rho;</sub></td>
+                            <td>Wan &amp; Van der Merwe 2000 [<a href="#r4">4</a>]</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td><strong>FO-EKF</strong></td>
+                            <td>EKF avec dynamique fractionnaire (dérivée de Caputo) &mdash; mémoire longue de
+                                l'historique courant/tension</td>
+                            <td>frac_order &isin; [0.5, 1], mem_horizon, &sigma;&sup2;<sub>state</sub>, R<sub>meas</sub>
+                            </td>
+                            <td>fractional-order ECM</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td><strong>H<sub>&infin;</sub></strong></td>
+                            <td>Pas d'hypothèse Gaussienne&nbsp;; minimax du worst-case (filtre robuste)</td>
+                            <td>&gamma;, &sigma;&sup2;<sub>state</sub>, R<sub>meas</sub></td>
+                            <td>Simon 2006, ch. 13 [<a href="#r5">5</a>]</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td><strong>AUKF-SR</strong></td>
+                            <td>UKF en forme square-root (numériquement stable) + adaptation forget-factor sur la
+                                covariance</td>
+                            <td>&alpha;, &sigma;&sup2;<sub>state</sub>, R<sub>meas</sub>, &lambda;<sub>forget</sub></td>
+                            <td>adaptive UKF SR</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td><strong>SO-SMO</strong></td>
+                            <td>Observer en mode glissant 2<sup>nd</sup> ordre (super-twisting)&nbsp;; convergence en
+                                temps fini</td>
+                            <td>&lambda;<sub>1</sub>, &lambda;<sub>2</sub></td>
+                            <td>Levant 2003</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td><strong>ICRPF</strong></td>
+                            <td>Particle filter cubature avec resampling adaptatif&nbsp;; convergence non-Gaussienne
+                            </td>
+                            <td>n_particles &isin; [50, 500], resample_threshold</td>
+                            <td>improved cubature RTS PF</td>
+                        </tr>
+                        <tr class="highlight">
+                            <td>10</td>
+                            <td><strong>EnsembleMeta</strong> (notre)</td>
+                            <td>Combinaison de 3 filtres (EKF + FO-EKF + JUKF 5 états) avec Bayesian Model Averaging +
+                                correction biais EMA</td>
+                            <td>ema_&alpha; = 0.95, softmax-&beta;</td>
+                            <td>basé Raftery 2005</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="datasets">
+            <h1 class="section" data-num="2">Datasets &mdash; détails techniques par source</h1>
+
+            <p>Pour chaque dataset, le modèle exact de cellule, la capacité nominale, la fenêtre de tension utile, les
+                profils inclus, les températures testées et la fréquence d'échantillonnage.</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Dataset</th>
+                            <th>Modèle cellule</th>
+                            <th>Cap. nom.</th>
+                            <th>Tension</th>
+                            <th>N cells</th>
+                            <th>Profils inclus</th>
+                            <th>T testées</th>
+                            <th>F<sub>ech</sub></th>
+                            <th>Format</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>CALCE A123 dynamique</strong></td>
+                            <td>A123 ANR26650M1A</td>
+                            <td class="num">2.3 Ah</td>
+                            <td>2.0&ndash;3.6 V</td>
+                            <td class="num">2</td>
+                            <td>DST, FUDS, US06, BJDST</td>
+                            <td>0, 25, 40 °C</td>
+                            <td class="num">1 Hz</td>
+                            <td>.xlsx</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CALCE A123 legacy</strong></td>
+                            <td>A123 ANR26650M1A</td>
+                            <td class="num">2.3 Ah</td>
+                            <td>2.0&ndash;3.6 V</td>
+                            <td class="num">1</td>
+                            <td>OCV pulse</td>
+                            <td>0, 25, 40 °C</td>
+                            <td class="num">1 Hz</td>
+                            <td>.csv</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CALCE INR18650-20R</strong></td>
+                            <td>Samsung INR18650-20R</td>
+                            <td class="num">2.0 Ah</td>
+                            <td>2.5&ndash;4.2 V</td>
+                            <td class="num">6</td>
+                            <td>DST, FUDS, US06, BJDST</td>
+                            <td>0, 25, 45 °C</td>
+                            <td class="num">1 Hz</td>
+                            <td>.xlsx (faux .xls)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Severson MIT batch1+2</strong></td>
+                            <td>A123 APR18650M1A</td>
+                            <td class="num">1.1 Ah</td>
+                            <td>2.0&ndash;3.6 V</td>
+                            <td class="num">169</td>
+                            <td>fast-charge + cyclage 1C</td>
+                            <td>~30 °C</td>
+                            <td class="num">1 Hz</td>
+                            <td>.csv</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Panasonic 18650PF</strong></td>
+                            <td>Panasonic NCR18650PF</td>
+                            <td class="num">2.9 Ah</td>
+                            <td>2.5&ndash;4.2 V</td>
+                            <td class="num">1</td>
+                            <td>DST, US06, FUDS, HWFET, UDDS, LA92, NN, Cycles 1&ndash;4</td>
+                            <td>-20, -10, 0, 10, 25 °C</td>
+                            <td class="num">19 Hz</td>
+                            <td>.mat</td>
+                        </tr>
+                        <tr>
+                            <td><strong>LG Chem HG2</strong></td>
+                            <td>LG INR18650HG2 (Si-C anode)</td>
+                            <td class="num">3.0 Ah</td>
+                            <td>2.0&ndash;4.2 V</td>
+                            <td class="num">27</td>
+                            <td>LA92, UDDS, US06, HWFET, HHDDT, PDMHC</td>
+                            <td>-10, 0, 10, 25, 40 °C</td>
+                            <td class="num">1 Hz</td>
+                            <td>.csv</td>
+                        </tr>
+                        <tr>
+                            <td><strong>NASA PCoE B-cells</strong></td>
+                            <td>B0005&ndash;B0007, B0018 (18650 commercial)</td>
+                            <td class="num">2.0 Ah</td>
+                            <td>2.5&ndash;4.2 V</td>
+                            <td class="num">4</td>
+                            <td>charge / discharge cycle + EIS</td>
+                            <td>4, 24, 43 °C</td>
+                            <td class="num">1 Hz</td>
+                            <td>.mat</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Yao TU Berlin LG M50LT</strong></td>
+                            <td>LG INR21700-M50LT</td>
+                            <td class="num">4.85 Ah</td>
+                            <td>2.5&ndash;4.2 V</td>
+                            <td class="num">60</td>
+                            <td>OCTBC + standard cycles</td>
+                            <td>5, 15, 25, 35, 45 °C</td>
+                            <td class="num">1 Hz</td>
+                            <td>.ndax (Neware)</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="table-caption"><span class="tab-label">Tableau 2.</span> Détail des huit datasets. Note : la
+                    fréquence d'échantillonnage Panasonic (19 Hz) diffère des autres (1 Hz) ; un filtre anti-aliasing
+                    (Butterworth ordre 4 à 0.4 Hz) suivi d'un re-sampling commun à 1 Hz est appliqué dans l'adaptateur
+                    dédié.</p>
+            </div>
+        </section>
+
+        <section id="cellules">
+            <h1 class="section" data-num="3">Chimies &mdash; composition et plages caractéristiques</h1>
+
+            <p>Pour chaque famille chimique, la composition cathode/anode, les plages de capacité nominale et la fenêtre
+                de tension utile. Ces caractéristiques expliquent pourquoi un filtre tuné sur une chimie ne tient pas
+                tel quel sur une autre&nbsp;: R<sub>0</sub>, courbe OCV-SOC et constantes de temps RC diffèrent
+                fortement.</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Chimie</th>
+                            <th>Cathode</th>
+                            <th>Anode</th>
+                            <th>Capacité nominale typique</th>
+                            <th>Plage tension</th>
+                            <th>Format(s) testé(s)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>LFP</strong></td>
+                            <td>LiFePO<sub>4</sub></td>
+                            <td>graphite</td>
+                            <td class="num">1.1&ndash;2.5 Ah (18650), 2.3 Ah (26650)</td>
+                            <td>2.0 — 3.6 V</td>
+                            <td>18650 (Severson), 26650 (A123)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>NMC</strong></td>
+                            <td>LiNi<sub>x</sub>Mn<sub>y</sub>Co<sub>z</sub>O<sub>2</sub></td>
+                            <td>graphite</td>
+                            <td class="num">2.0&ndash;3.5 Ah (18650), 4.85 Ah (21700)</td>
+                            <td>2.5 — 4.2 V</td>
+                            <td>18650 (Pan, NASA, CALCE INR), 21700 (Yao)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>NCA</strong></td>
+                            <td>LiNi<sub>0.8</sub>Co<sub>0.15</sub>Al<sub>0.05</sub>O<sub>2</sub></td>
+                            <td>graphite</td>
+                            <td class="num">2.9&ndash;3.5 Ah (18650)</td>
+                            <td>2.5 — 4.2 V</td>
+                            <td>18650 (Pan, dual NCA/NMC)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>LCO</strong></td>
+                            <td>LiCoO<sub>2</sub></td>
+                            <td>graphite</td>
+                            <td class="num">2.0&ndash;2.5 Ah (18650)</td>
+                            <td>3.0 — 4.2 V</td>
+                            <td>18650 (NASA sous-ensemble)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>NMC + Si-C anode</strong></td>
+                            <td>NMC</td>
+                            <td>silicium-graphite composite</td>
+                            <td class="num">3.0 Ah (LG HG2)</td>
+                            <td>2.5 — 4.2 V</td>
+                            <td>18650 (LG HG2)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>NMC haute tension</strong></td>
+                            <td>NMC modifié</td>
+                            <td>graphite</td>
+                            <td class="num">3.0 Ah</td>
+                            <td>2.5 — <strong>4.35 V</strong></td>
+                            <td>18650 (variant LG HG2)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="profils">
+            <h1 class="section" data-num="4">Profils &mdash; origine normative et régime caractéristique</h1>
+
+            <p>Pour chaque profil, l'origine normative (EPA, CARB, UN-ECE, Beijing, etc.), la durée caractéristique et
+                le régime ciblé.</p>
+
+            <h2 data-num="4.1">Profils dynamiques standards</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Profil</th>
+                            <th>Origine standard</th>
+                            <th>Type</th>
+                            <th>Durée</th>
+                            <th>Caractéristique</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>DST</strong></td>
+                            <td>USABC FreedomCAR</td>
+                            <td>dynamic stress test</td>
+                            <td>~24 min</td>
+                            <td>Cycles courts accélération/freinage</td>
+                        </tr>
+                        <tr>
+                            <td><strong>FUDS</strong></td>
+                            <td>EPA US (1978)</td>
+                            <td>Federal Urban Driving</td>
+                            <td>23 min</td>
+                            <td>Conduite urbaine standard US</td>
+                        </tr>
+                        <tr>
+                            <td><strong>US06</strong></td>
+                            <td>EPA SFTP</td>
+                            <td>aggressive highway</td>
+                            <td>10 min</td>
+                            <td>Hautes accélérations + vitesse</td>
+                        </tr>
+                        <tr>
+                            <td><strong>BJDST</strong></td>
+                            <td>Beijing</td>
+                            <td>Beijing dynamic stress</td>
+                            <td>~30 min</td>
+                            <td>Conduite urbaine chinoise</td>
+                        </tr>
+                        <tr>
+                            <td><strong>HWFET</strong></td>
+                            <td>EPA</td>
+                            <td>Highway Fuel Economy</td>
+                            <td>12.6 min</td>
+                            <td>Régime autoroute soutenu</td>
+                        </tr>
+                        <tr>
+                            <td><strong>UDDS</strong></td>
+                            <td>EPA</td>
+                            <td>Urban Dynamometer</td>
+                            <td>22.9 min</td>
+                            <td>LA-4 cycle (urban)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>LA92</strong></td>
+                            <td>California</td>
+                            <td>Unified Cycle</td>
+                            <td>23.7 min</td>
+                            <td>Mixte urbain + autoroute</td>
+                        </tr>
+                        <tr>
+                            <td><strong>WLTC</strong></td>
+                            <td>UN-ECE GTR-15</td>
+                            <td>Worldwide light-vehicles</td>
+                            <td>30 min</td>
+                            <td>Standard européen 2017+</td>
+                        </tr>
+                        <tr>
+                            <td><strong>BCDC</strong></td>
+                            <td>Beijing</td>
+                            <td>constant-discharge</td>
+                            <td>variable</td>
+                            <td>Référence statique</td>
+                        </tr>
+                        <tr>
+                            <td><strong>HHDDT</strong></td>
+                            <td>CARB</td>
+                            <td>Heavy Heavy-Duty Diesel</td>
+                            <td>~30 min</td>
+                            <td>Camion lourd (Class 8)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CSHVC</strong></td>
+                            <td>CARB</td>
+                            <td>City-Suburban Heavy Vehicle</td>
+                            <td>~30 min</td>
+                            <td>Bus / truck mixte</td>
+                        </tr>
+                        <tr>
+                            <td><strong>FTP-72 / FTP-75</strong></td>
+                            <td>EPA</td>
+                            <td>Federal Test Procedure</td>
+                            <td>20&ndash;31 min</td>
+                            <td>Cycle homologation US</td>
+                        </tr>
+                        <tr>
+                            <td><strong>IM</strong></td>
+                            <td>inspection / maintenance</td>
+                            <td>constant-power</td>
+                            <td>variable</td>
+                            <td>Référence steady-state</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PDTCB / PDMHC</strong></td>
+                            <td>port-drayage</td>
+                            <td>port truck cycles</td>
+                            <td>~30 min</td>
+                            <td>Logistique maritime</td>
+                        </tr>
+                        <tr>
+                            <td><strong>OCTBC</strong></td>
+                            <td>OCT battery cycling</td>
+                            <td>aging-oriented</td>
+                            <td>variable</td>
+                            <td>Cyclage long terme (Yao)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 data-num="4.2">Profils maison Panasonic</h2>
+            <p>NN (No-Name), Cycle_1, Cycle_2, Cycle_3, Cycle_4 &mdash; mix de drives standards à 25 °C, conçus par
+                Kollmeyer pour tester des cas mixtes pas couverts par les standards EPA.</p>
+
+            <h2 data-num="4.3">Profils de cyclage (caractérisation)</h2>
+            <ul>
+                <li><strong>CC-CV</strong> &mdash; charge constant-current jusqu'à V<sub>max</sub>, puis
+                    constant-voltage jusqu'à I<sub>min</sub>. Standard pour études d'aging.</li>
+                <li><strong>CC-discharge</strong> &mdash; décharge constant-current pure (NASA, 4 A jusqu'à
+                    V<sub>min</sub>). Référence de capacité.</li>
+            </ul>
+        </section>
+
+        <section class="references" id="references">
+            <h2>Références</h2>
+            <ol>
+                <li id="r1">G. L. Plett, &laquo;&nbsp;Extended Kalman filtering for battery management systems of
+                    LiPB-based HEV battery packs&nbsp;&raquo;, <em>J. Power Sources</em>, vol. 134, pp. 252&ndash;261,
+                    2004. doi.org/10.1016/j.jpowsour.2004.02.031</li>
+                <li id="r2">G. L. Plett, &laquo;&nbsp;Sigma-point Kalman filtering for battery management
+                    systems&nbsp;&raquo;, <em>J. Power Sources</em>, vol. 161, pp. 1369&ndash;1384, 2006.
+                    doi.org/10.1016/j.jpowsour.2006.06.004</li>
+                <li id="r3">S. J. Julier &amp; J. K. Uhlmann, &laquo;&nbsp;A new extension of the Kalman filter to
+                    nonlinear systems&nbsp;&raquo;, <em>Proc. SPIE</em>, vol. 3068, 1997. doi.org/10.1117/12.280797</li>
+                <li id="r4">E. A. Wan &amp; R. Van der Merwe, &laquo;&nbsp;The unscented Kalman filter for nonlinear
+                    estimation&nbsp;&raquo;, <em>IEEE AS-SPCC</em>, 2000. doi.org/10.1109/ASSPCC.2000.882463</li>
+                <li id="r5">D. Simon, <em>Optimal State Estimation: Kalman, H<sub>&infin;</sub>, and Nonlinear
+                        Approaches</em>, Wiley, 2006, ch. 13. doi.org/10.1002/0470045345</li>
+                <li id="r6">K. A. Severson <em>et al.</em>, &laquo;&nbsp;Data-driven prediction of battery cycle life
+                    before capacity degradation&nbsp;&raquo;, <em>Nature Energy</em>, vol. 4, 2019.
+                    doi.org/10.1038/s41560-019-0356-8</li>
+                <li id="r7">P. Kollmeyer, &laquo;&nbsp;Panasonic 18650PF Li-ion battery data&nbsp;&raquo;, Mendeley
+                    Data, 2018. doi.org/10.17632/wykht8y7tg.1</li>
+                <li id="r8">P. Kollmeyer <em>et al.</em>, &laquo;&nbsp;LG 18650HG2 Li-ion battery data&nbsp;&raquo;,
+                    Mendeley Data, 2020. doi.org/10.17632/cp3473x7xv.3</li>
+                <li id="r9">B. Saha &amp; K. Goebel, &laquo;&nbsp;Battery Data Set&nbsp;&raquo;, NASA Ames Prognostics
+                    Data Repository, 2007. ti.arc.nasa.gov/c/13/</li>
+                <li id="r10">Y. Xing <em>et al.</em>, CALCE Battery Data, University of Maryland.
+                    calce.umd.edu/battery-data</li>
+                <li id="r11">J. Dem&scaron;ar, &laquo;&nbsp;Statistical comparisons of classifiers over multiple data
+                    sets&nbsp;&raquo;, <em>J. Mach. Learn. Res.</em>, vol. 7, pp. 1&ndash;30, 2006.
+                    jmlr.org/papers/v7/demsar06a.html</li>
+                <li id="r12">M. A. Hannan <em>et al.</em>, &laquo;&nbsp;A review of state-of-charge
+                    estimation&nbsp;&raquo;, <em>J. Power Sources</em>, vol. 502, 2021.
+                    doi.org/10.1016/j.jpowsour.2021.230003</li>
+            </ol>
+        </section>
+
+
+    </div>
+</body>
+
+</html>
